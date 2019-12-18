@@ -5,6 +5,8 @@ import static java.util.stream.Stream.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.Random;
 
 
@@ -80,15 +82,28 @@ public class StreamsPractice
 
         // Using the limit function we can limit the size of a
         // Stream. 
-
         // Using the Random class we can generate a random stream
         // of ints.
         Random randomGenerator = new Random();
 
+
+        System.out.println("Limit integers:");
         // Generate the stream of integers and use the limit function
         // in order to only create One-Hundred integers.
         randomGenerator.ints().limit(100)
             // Print out each of the integers.
             .forEach(System.out::print);
+
+        // Stream provides sorting capabilities, by default it is
+        // sorted Lexicographically. A comparator can also be used
+        // to sort values in a custom manner. Though not with IntStream.
+
+        // Generate a random stream of integers.
+        IntStream randomIntegers = randomGenerator.ints().limit(10);
+
+        System.out.println("\nSorted integers:");
+        // Using the sorted function, the stream will sort the integers
+        // in ascending order.
+        randomIntegers.sorted().forEach(System.out::print);
     }
 }
