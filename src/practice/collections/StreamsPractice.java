@@ -5,6 +5,7 @@ import static java.util.stream.Stream.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import java.util.Random;
 
 
 public class StreamsPractice
@@ -59,7 +60,35 @@ public class StreamsPractice
         // our values by applying literal functions to them.
         // We will double our values for output.
         listOfIntegers.stream().map(ourInt -> ourInt * 2)
-            .forEach(System.out::println);;
+            .forEach(System.out::println);
 
+
+        // Stream contains a filter function which allows us to select
+        // a subset of the data based on a specified predicate.
+        // Our filter below will select only the integers that are
+        // equal to Three.
+        Stream<Integer> valuesOfThree = of(2, 3, 2, 3, 1, 4, 5, 3)
+            .filter(possibleThree -> possibleThree == 3);
+
+            // Reusing a previous stream will throw an Illegal State
+            // Exception. As a stream should only be used once then 
+            // collected or piped.
+            //duplicateStream.filter(ourInt -> ourInt == 3);
+
+        // Print out our selected Three's.
+        valuesOfThree.forEach(System.out::println);
+
+        // Using the limit function we can limit the size of a
+        // Stream. 
+
+        // Using the Random class we can generate a random stream
+        // of ints.
+        Random randomGenerator = new Random();
+
+        // Generate the stream of integers and use the limit function
+        // in order to only create One-Hundred integers.
+        randomGenerator.ints().limit(100)
+            // Print out each of the integers.
+            .forEach(System.out::print);
     }
 }
