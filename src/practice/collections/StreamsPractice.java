@@ -199,6 +199,31 @@ public class StreamsPractice
         // Print out each line read in from file.
         linesOfFile.stream().forEach(System.out::println);
 
+        // As Stream is not a Collection. It can't be reused after
+        // a terminal operation has been performed on it.
+        // Else an IllegalStateException will occur.
+        // Here's an example.
+
+        Stream<String> streamThatCantBeReused = of("a", "b", "c")
+            // We chain some functional operations together.
+            .filter(value -> value.equals("a"))
+            .map(x -> x + "1");
+
+        // We preform a terminal operation. Which closes the Stream,
+        // afterwards.
+        streamThatCantBeReused.findFirst();
+
+        // Now our next terminal operation will fail with an Illegal
+        // State Exception.
+        try
+        {
+            streamThatCantBeReused.findAny();
+        }
+        catch(IllegalStateException streamReuseError)
+        {
+            System.out.println("Stream exception caught.");   
+        }
+
         
     }
 }
