@@ -224,6 +224,40 @@ public class StreamsPractice
             System.out.println("Stream exception caught.");   
         }
 
+        // So as we've just witnessed. Streams can't be reused after
+        // a terminal operation. 
+        // This is because Stream is a pipeline for functional operations.
+        // A Stream is made up of Three concepts,
+        // Source -> Intermediate Operations -> Terminal Operation.
+        //
+        // A Source is a Collection or sequence of variables.
+        //
+        // Intermediate Operations are operations that manipulate the 
+        // current Source elements and return a new Stream.
+        //
+        // A Terminal Operation is an operation which applies an action
+        // to each element in the Stream, and probably returns a result.
+        //
+        // After the Terminal Operation has been executed. A findFirst
+        // or count function for example. The Stream is closed.
+        //
+        // To counteract this, we collect our elements.
+        // Using the collect function. We can gather the Stream elements
+        // and insert them into a new collection. 
+        // Which can be used as a Stream again.
+
+        Stream<String> streamToCollect = of("a", "b", "a")
+            // Apply an intermediate operation.
+            .filter(x -> x.equals("a"));
+
+        // Apply our terminal operation.
+        int streamCount = streamToCollect.count();
+
+        // Collect our closed Stream to a new List.
+        List<String> collectedStream = streamToCollect.collect(Collectors.toList());
+        
+        // Create another Stream from our collected Stream List.
+        collectedStream.stream().forEach(System.out::println);
         
     }
 }
