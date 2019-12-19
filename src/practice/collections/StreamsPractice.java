@@ -7,13 +7,20 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream.Builder;
 import java.util.Random;
-
+import java.util.function.Supplier;
+import java.util.ArrayList;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.io.IOException;
 
 public class StreamsPractice
 {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         // Found in java.util.stream.
         // A stream is a sequence of elements.
@@ -86,7 +93,6 @@ public class StreamsPractice
         // of ints.
         Random randomGenerator = new Random();
 
-
         System.out.println("Limit integers:");
         // Generate the stream of integers and use the limit function
         // in order to only create One-Hundred integers.
@@ -105,5 +111,94 @@ public class StreamsPractice
         // Using the sorted function, the stream will sort the integers
         // in ascending order.
         randomIntegers.sorted().forEach(System.out::print);
+
+        // In case we wish to create an empty stream, we use the empty
+        // function. This is helpful for avoiding nulls.
+        Stream<String> emptyStream = empty();
+
+        // In case we need to convert a Stream into an Array.
+        // We can use the Arrays.stream function in order to convert
+        // this for us.
+        String[] arrayOfStrings = new String[]{"abc", "cba", "bac"};
+
+        // Now using the stream function we convert our Array into a
+        // Stream.
+        // We can also define the beginning and ending index of which
+        // we want made into a Stream.
+        Stream<String> streamOfStrings = Arrays.stream(arrayOfStrings, 0, 3);
+
+        // Display out each string.
+        streamOfStrings.forEach(System.out::println);
+
+        // Using Stream.Builder we can generate a Stream ad hoc, by
+        // using the incorporated the builder pattern.
+        Stream.Builder<String> streamBuilder = Stream.<String>builder()
+            // Add on the elements we wish to have in stream.
+            .add("Start")
+            .add("End");
+
+        // Create the desired Stream from the StreamBuilder. 
+        Stream<String> streamFromBuilder = streamBuilder.build();
+
+        // Execute a function on the Stream. 
+        streamFromBuilder.forEach(System.out::println);
+
+        // We can generate a Stream using the generate function.
+        // It uses the Supplier interface for element generation.
+
+        // A character set for random generation.
+        char[] alphabet = new char[]{
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+            'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
+            'u', 'v', 'w', 'x', 'y', 'z'
+        };
+
+        // A supplier interface for generating the characters randomly.
+        Supplier<Character> randomCharacterGenerator = () -> alphabet[
+            randomGenerator.nextInt(26)];
+
+        // Here we generate our characters into a Stream with a limit
+        // of twenty. 
+        Stream<Character> generatedStream = Stream
+            .generate(randomCharacterGenerator)
+            // It is important to place a limit on the Stream
+            // as it is infinite.
+            .limit(20);
+
+        // Print out each generated character.
+        generatedStream.forEach(System.out::print);
+
+        // Another way of generating a Stream, is by using the iterate
+        // function. This function allows us to set an initial variable,
+        // which will be fed into the next iteration and applied to the 
+        // second function parameter.
+        System.out.println(); // New line.
+        // Start at ten, iterate over it and add One to it each time.
+        Stream.iterate(10, x -> x + 1)
+            // Repeat only Ten times.
+            .limit(10)
+            // Print out each calculating.
+            .forEach(System.out::println);
+
+        // A quick way of reading a File line by line can be achieved
+        // using a Files function called lines, which will create a 
+        // Stream of type <String>.
+
+        // Get path to the file.
+        Path textFileToRead = Paths.get("src/practice/collections/file_to_read.txt");
+        
+        // Read each of the lines inside the text file and return it
+        // as a Stream to be operated on. 
+        // We're importing it as a UTF charset.
+        List<String> linesOfFile = new ArrayList();
+        try(Stream<String> lines = Files.lines(textFileToRead, Charset.forName("UTF-8")))
+        {
+            linesOfFile = lines.collect(Collectors.toList());
+        }
+
+        // Print out each line read in from file.
+        linesOfFile.stream().forEach(System.out::println);
+
+        
     }
 }
