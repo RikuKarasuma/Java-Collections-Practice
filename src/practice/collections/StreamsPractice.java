@@ -251,13 +251,42 @@ public class StreamsPractice
             .filter(x -> x.equals("a"));
 
         // Apply our terminal operation.
-        int streamCount = streamToCollect.count();
-
         // Collect our closed Stream to a new List.
         List<String> collectedStream = streamToCollect.collect(Collectors.toList());
+
+        // Apply our terminal operation.
+        long streamCount = collectedStream.size();
         
         // Create another Stream from our collected Stream List.
         collectedStream.stream().forEach(System.out::println);
-        
+
+        // Stream has several functions for matching. These
+        // are anyMatch, allMatch and noneMatch. 
+
+        String[] testStrings = new String[]{"Bob", "Dob", "Cob"};
+
+        // Any match will return based on any of the values
+        // matching the predicate function. 
+        boolean doesAnyContainD = Arrays.stream(testStrings)
+            .anyMatch(str -> str.contains("D"));
+
+        // Print out the anyMatch result which should be True.
+        System.out.println("Does any contain D: " + doesAnyContainD);
+
+        // All match will return based on each of the values 
+        // entirely matching the same predicate.
+        boolean doesAllContainO = Arrays.stream(testStrings)
+            .allMatch(str -> str.contains("o"));
+
+        // Print out the allMatch result which should be True.
+        System.out.println("Does all elements contain o: " + doesAllContainO);
+
+        // None match will return based on each of the values
+        // entirely not matching the same predicate.
+        boolean doesNoneContainX = Arrays.stream(testStrings)
+            .noneMatch(str -> str.contains("x"));
+
+        // Print out the noneMatch result which should be True.
+        System.out.println("Does none of these values contain x: " + doesNoneContainX);
     }
 }
