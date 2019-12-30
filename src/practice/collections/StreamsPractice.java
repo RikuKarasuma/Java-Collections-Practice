@@ -3,13 +3,18 @@ package practice.collections;
 import static java.lang.System.out;
 import static java.util.stream.Stream.*;
 import java.util.Arrays;
+import java.util.IntSummaryStatistics;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
+import java.util.stream.Collector;
 import java.util.stream.IntStream;
 import java.util.stream.Stream.Builder;
 import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 import java.util.ArrayList;
 import java.nio.charset.Charset;
@@ -313,7 +318,10 @@ public class StreamsPractice
         // of the accumulator. 
         // Combiner is called only in parallel mode in order to reduce the results
         // from different threads. 
-        int summedParallelValue = listOfIntegers.parallelStream().reduce(initialValue, (x, y) -> x + y,
+        int summedParallelValue = listOfIntegers.parallelStream().reduce(initialValue, 
+            // Reducing literal.
+            (x, y) -> x + y,
+            // Aggregation literal.
             (x, y) -> 
             {
                 int summedValues = x + y;
@@ -326,6 +334,74 @@ public class StreamsPractice
         System.out.println("Reduced accumulated value from Combiner: " + 
             summedParallelValue);
 
+        // Reduction can also be achieved using the collect function.
+        // Collect as seen above, retrieves the results of a stream.
+        // It takes a type parameter of type Collector and there's already
+        // a great deal of Collector types for common scenarios.
+        // Such as collect to list, averaging or summing ints.
+
+        // Collect to list.
+        List<Integer> collectedInts = listOfIntegers.stream().collect(Collectors.toList());
+
+        // Collect/Reduce to single string.
+        String joinedStreamStrings = linesOfFile.stream().collect(Collectors.joining(" "));
+        System.out.println("Reduced string: " + joinedStreamStrings);
+
+        // Collect/Reduce to averaged integer.
+        double average = listOfIntegers.stream().collect(Collectors.averagingInt(x -> x));
+        System.out.println("Reduced average: " + average);
+
+        // Collect/Reduce to sum.
+        int totalCollectedValue = listOfIntegers.stream().collect(Collectors.summingInt(x -> x));
+        System.out.println("Reduced sum: " + totalCollectedValue);
+
+        // Collectors class also contains a statistics function called,
+        // summarizingInt. Which can be used to collect the statistical
+        // information of a Stream containing some kind of Integer.
+        // Using this we can retrieve the sum, min, max and average of a
+        // group of integers.
+
+        IntSummaryStatistics statistics = listOfIntegers.stream()
+            .collect(Collectors.summarizingInt(x -> x));
+        System.out.println("Count: " + statistics.getCount() + 
+            ", Min: " + statistics.getMin() + 
+            ", Max: " + statistics.getMax() + 
+            ", Average: " + statistics.getAverage());
+
+        // We can also group by a certain value using the collect function.
+        Map<Integer, List<Integer>> groupedByNumber = listOfIntegers.stream()
+            .collect(Collectors.groupingBy(x -> x));
+        groupedByNumber.forEach((x, y) -> System.out.println(x + " has " + y.size() 
+            + " number of elements."));
+
+        // Or group by a specified predicate.
+        Map<Boolean, List<Integer>> overTwenty = listOfIntegers.stream()
+            .collect(Collectors.partitioningBy(x -> x > 20));
+        overTwenty.forEach((x, y) -> System.out.println(x + " has this many elements: " 
+            + y.size()));
         
+        // Finally with the Collector, we can create custom Collectors.
+        // This will allow us to create custom aggregators for streams.
+        
+        // First we create our Collector.
+        // This collector will gather our ints and add them to a ArrayList.
+        Collector<
+            // Expected type to accumulate.
+            Integer,
+            // Accumulator type.
+             ?,
+            // Return type.
+            ArrayList<Integer>> customArrayListCollector = Collector.of(
+                // Supplier function.
+                ArrayList::new,
+                // Accumulator function.
+                ArrayList::add, 
+                // Combiner function.
+                (x, y) -> { x.addAll(y); return x;});
+        
+        // Use our custom collector to create an ArrayList.
+        ArrayList<Integer> customArrayListCollected = listOfIntegers.stream()
+            .collect(customArrayListCollector);
+        customArrayListCollected.forEach(System.out::println);
     }
 }
