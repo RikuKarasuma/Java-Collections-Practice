@@ -4,6 +4,7 @@ import static java.lang.System.out;
 import static java.util.stream.Stream.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -288,5 +289,43 @@ public class StreamsPractice
 
         // Print out the noneMatch result which should be True.
         System.out.println("Does none of these values contain x: " + doesNoneContainX);
+
+        // Much like the iterate function, we can use reduce to 
+        // iterate over a Streams values and accumulating them 
+        // using a specified logic which stored in a literal function.
+
+        // There is Two Reduction concepts that you need to be aware of.
+        // The first concept is the Accumulator, which specifies the logic
+        // of the aggregation. Along with an initial value or not.
+
+        // Without initial value.
+        // Optional<Integer> summedValue = streamOfInts.reduce( (x, y) -> x.get() + y.get());
+
+        // With initial value.
+        final int initialValue = 2;
+        int summedValue = listOfIntegers.stream().reduce(initialValue, (x, y) -> x + y);
+
+        // Print out the summed result.
+        System.out.println("Reduced accumulated value: " + summedValue);
+
+        // The second concept is that of the combiner.
+        // The combiner is another literal function which aggregates the results
+        // of the accumulator. 
+        // Combiner is called only in parallel mode in order to reduce the results
+        // from different threads. 
+        int summedParallelValue = listOfIntegers.stream().reduce(initialValue, (x, y) -> x + y,
+            (x, y) -> 
+            {
+                int summedValues = x + y;
+                System.out.println("Combiner sum for " + x + " and " + y + " is: " 
+                + summedValues);
+                return summedValues;
+            });
+
+        // Print out the summed Combiner result.
+        System.out.println("Reduced accumulated value from Combiner: " + 
+            summedParallelValue);
+
+        
     }
 }
