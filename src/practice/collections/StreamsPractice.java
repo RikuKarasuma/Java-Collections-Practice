@@ -313,7 +313,7 @@ public class StreamsPractice
         // of the accumulator. 
         // Combiner is called only in parallel mode in order to reduce the results
         // from different threads. 
-        int summedParallelValue = listOfIntegers.stream().reduce(initialValue, (x, y) -> x + y,
+        int summedParallelValue = listOfIntegers.parallelStream().reduce(initialValue, (x, y) -> x + y,
             (x, y) -> 
             {
                 int summedValues = x + y;
