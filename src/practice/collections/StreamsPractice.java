@@ -389,7 +389,7 @@ public class StreamsPractice
             // Expected type to accumulate.
             Integer,
             // Accumulator type.
-             ?,
+            ?,
             // Return type.
             ArrayList<Integer>> customArrayListCollector = Collector.of(
                 // Supplier function.
@@ -403,5 +403,32 @@ public class StreamsPractice
         ArrayList<Integer> customArrayListCollected = listOfIntegers.stream()
             .collect(customArrayListCollector);
         customArrayListCollected.forEach(System.out::println);
+
+        // One of the most powerful Streams concepts is that it can
+        // achieve parallelism extremely easily. 
+        // Best practice is that, if the source isn't a Collection
+        // or an Array. We should make the stream parallel, using the
+        // parallel function. Presumably for resource blocking reasons.
+
+        // Create a parallel stream from IntStreams range function.
+        IntStream multiThreadedStream = IntStream.range(200, 500).parallel();
+
+        // We can verify that a stream is parallel by using the isParallel
+        // function.
+        boolean isStreamParallel = multiThreadedStream.isParallel();
+
+        if(isStreamParallel)
+        {
+            // Execute a terminal operation that will be executed on multiple threads.
+            final boolean isAValueOverTwenty = multiThreadedStream.anyMatch(x -> x > 20);
+            System.out.println("Does multithreaded stream contain a value over Twenty: " + isAValueOverTwenty);
+        }
+
+        // A parallel stream can be converted back to a single threaded
+        // execution pattern. By using the sequential function.
+        IntStream parallelStream = IntStream.range(100, 200).parallel();
+
+        // Here we transform the multithreaded stream back to a single thread.
+        parallelStream = parallelStream.sequential();
     }
 }
